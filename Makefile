@@ -1,5 +1,5 @@
 build:
-	@go build -o bin/sso-service ./cmd/server/main.go
+	@go build -o bin/sso-service ./cmd/api/main.go
 
 run: build
 	@./bin/sso-service --config=./config/local.yaml

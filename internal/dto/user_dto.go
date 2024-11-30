@@ -1,8 +1,9 @@
 package dto
 
 type LoginRequest struct {
-	Email    string `json:"email"`
+	Phone    string `json:"phone"`
 	Password string `json:"password"`
+	AppId    int    `json:"app_id"`
 }
 
 type LoginResponse struct {
@@ -11,8 +12,9 @@ type LoginResponse struct {
 
 type RegisterRequest struct {
 	Name     string `json:"name"`
-	Email    string `json:"email"`
+	Phone    string `json:"phone"`
 	Password string `json:"password"`
+	AppId    int    `json:"app_id"`
 }
 
 type RegsiterResponse struct {
