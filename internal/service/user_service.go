@@ -11,9 +11,11 @@ import (
 
 type UserRepository interface {
 	GetUserByPhone(phone string, app_id int) (model.User, error)
-	GetAppByUser(app_id int) (model.App, error)
 	GetUser(user_id int) (model.User, error)
 	CreateUser(req dto.RegisterRequest) (int, error)
+	GetApp(app_id int) (model.App, error)
+	UpdateUser(req dto.UpdateRequest, user_id int) error
+	DeleteUser(user_id int) error
 }
 
 type UserService struct {
@@ -34,7 +36,7 @@ func (s *UserService) Login(req dto.LoginRequest) (string, error) {
 		return "", err
 	}
 
-	app, err := s.repository.GetAppByUser(req.AppId)
+	app, err := s.repository.GetApp(req.AppId)
 	if err != nil {
 		return "", err
 	}
@@ -60,7 +62,7 @@ func (s *UserService) Register(req dto.RegisterRequest) (string, error) {
 		return "", err
 	}
 
-	app, err := s.repository.GetAppByUser(req.AppId)
+	app, err := s.repository.GetApp(req.AppId)
 	if err != nil {
 		return "", err
 	}
@@ -75,4 +77,41 @@ func (s *UserService) Register(req dto.RegisterRequest) (string, error) {
 		return "", err
 	}
 	return token, nil
+}
+
+func (s *UserService) UpdateUser(req dto.UpdateRequest, token string) error {
+	app, err := s.repository.GetApp(req.AppId)
+	if err != nil {
+		return err
+	}
+
+	user_id, err := jwtlib.ParseToken(token, app.Secret)
+	if err != nil {
+		return err
+	}
+
+	err = s.repository.UpdateUser(req, user_id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *UserService) DeleteUser(token string, app_id int) error {
+	app, err := s.repository.GetApp(app_id)
+	if err != nil {
+		return err
+	}
+
+	user_id, err := jwtlib.ParseToken(token, app.Secret)
+	if err != nil {
+		return err
+	}
+
+	err = s.repository.DeleteUser(user_id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

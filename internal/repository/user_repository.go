@@ -31,7 +31,7 @@ func (r *UserRepository) GetUserByPhone(phone string, app_id int) (model.User, e
 	return user, nil
 }
 
-func (r *UserRepository) GetAppByUser(app_id int) (model.App, error) {
+func (r *UserRepository) GetApp(app_id int) (model.App, error) {
 	var app model.App
 	query := `
 		SELECT id, name, secret
@@ -68,4 +68,31 @@ func (r *UserRepository) CreateUser(req dto.RegisterRequest) (int, error) {
 	r.db.QueryRow(query, req.Name, req.Phone, req.Password, req.AppId).Scan(&user_id)
 
 	return user_id, nil
+}
+
+func (r *UserRepository) UpdateUser(req dto.UpdateRequest, user_id int) error {
+	query := `
+		UPDATE users
+		SET name = $1, description = $2, avatar_url = $3
+		WHERE id = $4
+	`
+
+	_, err := r.db.Exec(query, req.Name, req.Description, req.AvtarUrl, user_id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *UserRepository) DeleteUser(user_id int) error {
+	query := `
+		DELETE FROM users
+		WHERE id = $1
+	`
+	_, err := r.db.Exec(query, user_id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
